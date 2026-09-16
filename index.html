@@ -4,11 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#315efb">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="apple-mobile-web-app-title" content="DDS Cards">
 <title>DDS Flashcards</title>
-<link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icon-180.png">
 <style>
 :root {
@@ -79,6 +75,23 @@ button { font:inherit; }
 @media (max-width:520px){
   .app{padding:12px 12px 28px}.hero h1{font-size:29px}.question{font-size:21px}.answer{font-size:16px}.flashcard{padding:21px 18px;min-height:335px}
 }
+
+/* Responsive website layout and accessible touch controls. */
+html { -webkit-text-size-adjust:100%; }
+.app { min-height:100svh; padding-bottom:max(28px,env(safe-area-inset-bottom)); }
+button { touch-action:manipulation; }
+button:focus-visible { outline:3px solid var(--accent); outline-offset:4px; }
+.back { min-width:48px; height:48px; flex-shrink:0; }
+.top-title,.deck-title,.question { overflow-wrap:anywhere; }
+.hero p { max-width:55ch; }
+.flash-wrap { min-height:calc(100svh - 110px); }
+.flashcard { min-height:260px; }
+.answer { line-height:1.7; }
+.footer-actions,.review-actions { position:sticky; bottom:0; background:var(--bg); padding:10px 0 max(10px,env(safe-area-inset-bottom)); }
+.btn { min-height:54px; }
+@media(min-width:700px) { .deck-list { grid-template-columns:1fr 1fr; } .app { padding-top:30px; } }
+@media(max-width:520px) { .app { padding-left:max(16px,env(safe-area-inset-left)); padding-right:max(16px,env(safe-area-inset-right)); } .question { font-size:22px; } .answer { font-size:17px; } .flashcard { padding:22px 18px; } .flash-meta { flex-wrap:wrap; } }
+@media(prefers-reduced-motion:reduce) { * { transition:none!important; } }
 </style>
 </head>
 <body>
@@ -106,12 +119,13 @@ function esc(t) {
 function wrongSorted(ds) { return [...new Set(ds.wrong)].sort((a,b)=>a-b); }
 
 function renderHome() {
+  window.scrollTo(0,0);
   session=null;
   const state=loadState();
   document.getElementById('root').innerHTML = `
     <div class="hero">
       <h1>DDS Flashcards</h1>
-      <p>232 cards. Lecture by lecture. Questions stay in the same order as the Q&amp;A.</p>
+      <p>232 cards across 15 lectures. Choose a lecture to start studying. Your progress is saved in this browser.</p>
     </div>
     <div class="deck-list">
       ${DECKS.map((d,i)=>{
@@ -127,6 +141,7 @@ function renderHome() {
 }
 
 function openLecture(i) {
+  window.scrollTo(0,0);
   view={type:'lecture', deck:i};
   const d=DECKS[i];
   const [state,ds]=deckState(i);
@@ -134,7 +149,7 @@ function openLecture(i) {
   const cursor=Math.min(ds.cursor,d.cards.length);
   const pct=d.cards.length?Math.round(cursor/d.cards.length*100):0;
   document.getElementById('root').innerHTML = `
-    <div class="topbar"><button class="back" onclick="goHome()">‹</button><div class="top-title">Lecture</div></div>
+    <div class="topbar"><button aria-label="Back" class="back" onclick="goHome()">‹</button><div class="top-title">Lecture</div></div>
     <div class="lecture-card">
       <h2>${esc(d.title)}</h2>
       <p>${d.cards.length} questions, kept in the exact Q&amp;A order.</p>
@@ -171,6 +186,7 @@ function startWrong(i) {
 }
 
 function renderCard() {
+  window.scrollTo(0,0);
   if(!session) return renderHome();
   const d=DECKS[session.deck];
   if(session.pos>=session.indices.length) return renderDone();
@@ -178,7 +194,7 @@ function renderCard() {
   const c=d.cards[idx];
   const modeLabel=session.mode==='wrong'?'Wrong Cards':'Chronological';
   document.getElementById('root').innerHTML = `
-    <div class="topbar"><button class="back" onclick="openLecture(${session.deck})">‹</button><div class="top-title">${esc(d.title)}</div></div>
+    <div class="topbar"><button aria-label="Back" class="back" onclick="openLecture(${session.deck})">‹</button><div class="top-title">${esc(d.title)}</div></div>
     <div class="flash-wrap">
       <div class="flash-meta"><span>${modeLabel}</span><span>Question ${c.number} of ${d.cards.length}</span></div>
       <div class="flashcard">
@@ -218,7 +234,7 @@ function renderDone() {
   const wrong=wrongSorted(ds).length;
   const wasMode=session.mode;
   document.getElementById('root').innerHTML = `
-    <div class="topbar"><button class="back" onclick="openLecture(${session.deck})">‹</button><div class="top-title">${esc(d.title)}</div></div>
+    <div class="topbar"><button aria-label="Back" class="back" onclick="openLecture(${session.deck})">‹</button><div class="top-title">${esc(d.title)}</div></div>
     <div class="lecture-card done">
       <h2>${wasMode==='wrong'?'Wrong-card review finished':'Lecture finished'}</h2>
       <p>${wrong} wrong card${wrong===1?'':'s'} currently saved.</p>
@@ -232,8 +248,6 @@ function renderDone() {
 
 window.addEventListener('load', renderHome);
 </script>
-<script>
-if ('serviceWorker' in navigator && location.protocol.startsWith('http')) { navigator.serviceWorker.register('./sw.js').catch(()=>{}); }
-</script>
+
 </body>
 </html>
