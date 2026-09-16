@@ -1,0 +1,18 @@
+DDS Exam Flashcards - Q&A extraction audit
+Total cards: 232
+
+Lecture Finite State Machines (FSMs): 15 cards
+Lecture MIPS: 15 cards
+Lecture Verilog Hardware Description Language - Introduction: 10 cards
+Lecture Verilog Hardware Description Language: 30 cards
+Lecture Karnaugh Maps: 10 cards
+Lecture Counters: 15 cards
+Lecture 8 – Synchronous Design Basics and Setup and Hold Time: 15 cards
+Lecture 7 (Part 2): Non-Volatile Memories: 15 cards
+Lecture Speed of Combinational Circuits: 15 cards
+Lecture Static RAM (SRAM) and Dynamic RAM (DRAM): 15 cards
+Lecture 4 – Flip-Flops and Latches: 15 cards
+Lecture 3 – Combinational Logic: 17 cards
+Lecture 2 – CMOS Technology Basics and CMOS Inverter: 15 cards
+Lecture 1 – Introduction to Digital Circuit Design: 15 cards
+Lecture 3 – Part 2 (Multiplexers, Decoders, Demultiplexers, Encoders, and FPGA Lookup Tables): 15 cards
