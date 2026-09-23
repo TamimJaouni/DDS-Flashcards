@@ -92,6 +92,8 @@ button:focus-visible { outline:3px solid var(--accent); outline-offset:4px; }
 @media(min-width:700px) { .deck-list { grid-template-columns:1fr 1fr; } .app { padding-top:30px; } }
 @media(max-width:520px) { .app { padding-left:max(16px,env(safe-area-inset-left)); padding-right:max(16px,env(safe-area-inset-right)); } .question { font-size:22px; } .answer { font-size:17px; } .flashcard { padding:22px 18px; } .flash-meta { flex-wrap:wrap; } }
 @media(prefers-reduced-motion:reduce) { * { transition:none!important; } }
+.card-navigation { display:flex; gap:12px; margin:0 0 14px; }
+.card-navigation .btn { flex:1; min-width:0; }
 </style>
 </head>
 <body>
@@ -197,6 +199,10 @@ function renderCard() {
     <div class="topbar"><button aria-label="Back" class="back" onclick="openLecture(${session.deck})">‹</button><div class="top-title">${esc(d.title)}</div></div>
     <div class="flash-wrap">
       <div class="flash-meta"><span>${modeLabel}</span><span>Question ${c.number} of ${d.cards.length}</span></div>
+      <nav class="card-navigation" aria-label="Flashcard navigation">
+        <button class="btn" aria-label="Previous card" onclick="navigateCard(-1)" ${session.pos===0?'disabled':''}>← Previous</button>
+        <button class="btn" aria-label="Next card" onclick="navigateCard(1)" ${session.pos===session.indices.length-1?'disabled':''}>Next →</button>
+      </nav>
       <div class="flashcard">
         <div class="side-label">Question</div>
         <div class="question">${esc(c.question)}</div>
@@ -208,6 +214,14 @@ function renderCard() {
         <button class="btn correct" onclick="grade(true)">Correct</button>
       </div>
     </div>`;
+}
+function navigateCard(direction) {
+  if(!session || (direction!==-1 && direction!==1)) return;
+  const next=session.pos+direction;
+  if(next<0 || next>=session.indices.length) return;
+  session.pos=next;
+  session.revealed=false;
+  renderCard();
 }
 function revealAnswer() {
   session.revealed=true;
